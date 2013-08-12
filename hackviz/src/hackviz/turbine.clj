@@ -34,8 +34,8 @@
 (defn get-first [key results]
   (-> results first :data first :data first key))
 
-(defn create-query [matches reduces]
-  {:match (create-matches matches) :reduce reduces})
+(defn create-query [matches groups reduces]
+  {:match (create-matches matches) :group groups :reduce reduces})
 
 (defn newest-commit-ts [owner repo]
   (let [matches (create-matches {:owner owner :repo repo})
@@ -53,20 +53,35 @@
   {(str k "-" v) {v k}})
 
 (defn get-reducers [params]
-  (as-> params m
-       (:metrics m)
-       (string/split m #",")
-       (map #(string/split % #":") m)
-       (filter valid-reducer? m)
-       (map convert-reducer m)))
+  (if (:metrics params)
+    (as-> params m
+          (:metrics m)
+          (string/split m #",")
+          (map #(string/split % #":") m)
+          (filter valid-reducer? m)
+          (map convert-reducer m))))
+
+(defn convert-group [group]
+  (cond (contains? #{"minute" "hour" "day" "month" "year"} group) {"duration" group}
+        (contains? #{"owner" "author" "team" "repo"} group) {"segment" group}
+        :else nil))
+
+(defn get-groups [params]
+  (if (:groups params)
+    (as-> params g
+          (:groups g)
+          (string/split g #",")
+          (map convert-group g)
+          (remove nil? g))))
 
 (defn valid-filter? [[k v]]
-  (contains? #{:repo :owner :author :team} k))
+  (contains? #{"repo" "owner" "author" "team"} k))
 
 (defn get-filters [params]
   (filter valid-filter? params))
 
 (defn create-query-from-params [params]
   (let [filters (get-filters params)
+        groups (get-groups params)
         reducers (get-reducers params)]
-    (create-query filters reducers)))
+    (create-query filters groups reducers)))

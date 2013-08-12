@@ -37,7 +37,7 @@
       turbine/query-commits))
 
 (defroutes routes
-  (GET "/alo" {params :params} (str "alo guvna: " params))
+  (GET "/alo" [] "alo guvna")
   (GET "/commits" {params :params} (-> params query-turbine json/generate-string))
   (route/resources "/"))
 
