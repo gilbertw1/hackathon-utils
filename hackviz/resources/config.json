@@ -1,0 +1,15 @@
+{
+    "github-token": "<Github Oauth Token Here>",
+    "turbinedb-url": "http://localhost:8080",
+    "update-delay": 60000,
+    "server-base": "http://localhost:8080",
+    "repos": [{
+        "name": "repo1",
+        "owner": "myOrganization",
+        "team": "team-awesome"
+    },{
+        "name": "repo2",
+        "owner": "otherOrganization",
+        "team": "other-team"
+    }]
+}
