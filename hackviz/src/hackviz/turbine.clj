@@ -75,7 +75,7 @@
           (remove nil? g))))
 
 (defn valid-filter? [[k v]]
-  (contains? #{"repo" "owner" "author" "team"} k))
+  (contains? #{:repo :owner :author :team} k))
 
 (defn get-filters [params]
   (filter valid-filter? params))
@@ -84,4 +84,5 @@
   (let [filters (get-filters params)
         groups (get-groups params)
         reducers (get-reducers params)]
+    (prn (create-query filters groups reducers))
     (create-query filters groups reducers)))

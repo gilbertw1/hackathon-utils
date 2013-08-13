@@ -9,7 +9,8 @@
             [cheshire.core :as json]
             [hackviz.global :as g]
             [hackviz.turbine :as turbine]
-            [hackviz.updater :as updater]))
+            [hackviz.updater :as updater]
+            [hackviz.views :as views]))
 
 (def resource-conf (-> "config.json" io/resource))
 
@@ -39,6 +40,7 @@
 (defroutes routes
   (GET "/alo" [] "alo guvna")
   (GET "/commits" {params :params} (-> params query-turbine json/generate-string))
+  (GET "/testpage" [] (views/page (map #(:team @%) @g/repositories)))
   (route/resources "/"))
 
 (def application (reload/wrap-reload (handler/site #'routes)))
