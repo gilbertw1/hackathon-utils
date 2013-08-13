@@ -1,6 +1,6 @@
 var createHourData = function(hourResults) {
     return [
-        moment(hourResults.group, "YYYYMM").unix()*1000,
+        moment(hourResults.group, "YYYYMMDD").unix()*1000,
         hourResults.data[0].data[0]["repo-count"]
     ];
 };
@@ -12,11 +12,23 @@ var createTeamData = function(teamResults) {
     };
 };
 
+var commitValue = function(commitData) {
+    return commitData[1];
+}
+
+var createPieData = function(teamSeries) {
+    return [
+        teamSeries.name,
+        teamSeries.data.map(commitValue).reduce(function(a,b) {return a+b})
+    ];
+};
+
 $(function () {
     $.getJSON('commits?metrics=repo:count&groups=team,day', function(data) {
         var series = data.map(createTeamData);
-        console.log(series);
-        $('#container').highcharts({
+        var pieSeries = series.map(createPieData);
+
+        $('#spline').highcharts({
             chart: {
                 zoomType: 'x',
                 type: 'spline'
@@ -32,13 +44,38 @@ $(function () {
                     text: 'Commits'
                 }
             },
+            series: series
+        });
+
+        $('#pie').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Total Commits'
+            },
             tooltip: {
-                formatter: function() {
-                        return '<b>'+ this.series.name +'</b><br/>'+
-                        Highcharts.dateFormat('%b', this.x) +': '+ this.y +' commits';
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000',
+                        connectorColor: '#000000',
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    }
                 }
             },
-            series: series
+            series: [{
+                type: 'pie',
+                name: 'Commits',
+                data: pieSeries
+            }]
         });
     });
 });

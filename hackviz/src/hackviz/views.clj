@@ -34,4 +34,5 @@
             [:span.caret]]
           [:ul.dropdown-menu
             (map team-link teams)]]
-        [:div#container {:style "width 100%; height:400px;"}]]]))
+        [:div#spline {:style "width 100%; height:400px;"}]
+        [:div#pie {:style "min-width: 310px; height: 400px; margin: 0 auto;"}]]]))
