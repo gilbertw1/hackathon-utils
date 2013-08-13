@@ -43,10 +43,14 @@
   (GET "/testpage" [] (views/page (map #(:team @%) @g/repositories)))
   (route/resources "/"))
 
-(def application (reload/wrap-reload (handler/site #'routes)))
+(defn app-routes [{mode :mode}]
+  (if (= mode "prod")
+    (handler/site routes)
+    (-> #'routes handler/site reload/wrap-reload)))
 
 (defn -main [& [conf-file]]
-  (let [conf (read-conf conf-file)]
+  (let [conf (read-conf conf-file)
+        app (app-routes conf)]
     (g/initialize-atoms conf)
     (load-repos conf)
-    (run-server application {:port 8080 :join? false})))
+    (run-server app {:port 8080 :join? false})))
