@@ -1,0 +1,11 @@
+{
+    "org": "my-org",
+    "github-token": "<token>",
+    "teams": [{
+        "name": "Team One",
+        "members": ["ghuser1", "testuser2"]
+    },{
+        "name": "Another Team",
+        "members": ["usernumbe3", "auser4"]
+    }]
+}
