@@ -34,10 +34,9 @@
 (defn get-org-teams [org]
   (orgs/teams org (assoc @auth :all-pages true)))
 
-(defn create-repo [team org]
-  (let [name (repo-name team)]
-    (println "Creating repo: " name)
-    (repos/create-org-repo org name (merge repo-opts @auth {:description (str name " team repository")}))))
+(defn create-repo [repo org]
+  (println "Creating repo: " repo)
+    (repos/create-org-repo org repo (merge repo-opts @auth {:description (str repo " repository")})))
 
 (defn get-names [entity]
   (map :name entity))
@@ -50,9 +49,9 @@
 
 (defn create-repos [{:keys [org teams]}]
   (let [org-repos (get-org-repos org)
-        missing-teams (find-missing-teams teams org-repos repo-name)]
-    (doseq [team missing-teams]
-      (create-repo team org))))
+        missing-repos (find-missing-teams teams org-repos repo-name)]
+    (doseq [repo missing-repos]
+      (create-repo repo org))))
 
 (defn create-team [team org]
   (let [name (team-name team)
